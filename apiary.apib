@@ -1,0 +1,452 @@
+FORMAT: 1A
+HOST: http://private-00195a-binarbackendtest.apiary-mock.com
+
+# Simple Online Exam API
+
+This is a simple API for Binar Beginner Backend Test. It consists of create, read, update, and delete (CRUD) operation to user data and exam questions/answers data for the privileged user. This API also provides a way for user to authorize themselves and store their exam answers using this API.  
+
+## OAuth Token Exchange [/v1/token]
+
+Exchange credentials for `access_token`. Supported types:
+
++ `client_credentials`
++ [`urn:ietf:params:oauth:grant-type:jwt-bearer`](https://tools.ietf.org/html/draft-jones-oauth-jwt-bearer-03#section-6)
+
+### Exchange credentials for token [POST]
++ Request
+    + Attributes (OAuth grant request)
+    + Headers
+
+            Authorization: Basic ABCDEF
+
++ Response 200 (application/json)
+    + Attributes (OAuth valid response)
+
++ Request
+    + Attributes (OAuth jwt-bearer grant request)
+
++ Response 200 (application/json)
+    + Attributes (OAuth valid response)
+
+## Group User Data
+
+Resources related to the user data in the API.
+
++ Attributes
+    + nama (string) - Name
+    + alamat (string) - Address
+    + telepon (string) - Phone Number
+    + tempat_lahir (string) - Birth Place
+    + tanggal_lahir (string) - Birth date
+    + privilege (enum[string]) - The privilege of each user
+        + Members
+            + 'admin'
+            + 'user'
+
+## User Data Create Operation [/v1/user_data]
+
+### Create User Data [POST]
+
+This is for creating new user data. You may create your own user using this action. It takes a JSON object containing all of the attributes for user data.
+
++ Request (application/json)
+
+    + Headers
+    
+                Authentication: Bearer JWT
+    
+    + Body
+    
+            {
+                "nama": "Bambang",
+                "alamat": "Jogja",
+                "telepon": "083840007972",
+                "tempat_lahir": "Jogja",
+                "tanggal_lahir": "1987-07-04",
+                "privilege": "user"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /v1/user_data/1
+
+    + Body
+
+            {
+                "nama": "Bambang",
+                "alamat": "Jogja",
+                "telepon": "083840007972",
+                "tempat_lahir": "Jogja",
+                "tanggal_lahir": "1987-07-04",
+                "privilege": "user"
+            }
+            
++ Response 400
+
+        {
+            "error": "Input is invalid"
+        }
+            
+## User Data Read, Update, and Delete Operation [/v1/user_data/{data_id}]
+
++ Parameters
+    + data_id: 1 (required, number) - ID of the user data in form of an integer
+
+### Read User Data [GET]
+
+This is for reading certain user data.
+
++ Request
+
+    + Headers
+    
+                Authentication: Bearer JWT
+ 
+
++ Response 200 (application/json)
+
+        {
+            "nama": "Bambang",
+            "alamat": "Jogja",
+            "telepon": "083840007972",
+            "tempat_lahir": "Jogja",
+            "tanggal_lahir": "1987-07-04",
+            "privilege": "user"
+        }
+
+### Update User Data [PUT]
+
+This is for updating certain user data.
+
++ Request (application/json)
+
+    + Headers
+    
+                Authentication: Bearer JWT
+                
+    + Body
+
+            {
+                "nama": "Joko",
+                "alamat": "Jakarta",
+                "telepon": "087877453794",
+                "tempat_lahir": "Bandung",
+                "tanggal_lahir": "1981-02-15",
+                "privilege": "user"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /v1/user_data/1
+
+    + Body
+
+            {
+                "nama": "Joko",
+                "alamat": "Jakarta",
+                "telepon": "087877453794",
+                "tempat_lahir": "Bandung",
+                "tanggal_lahir": "1981-02-15",
+                "privilege": "user"
+            }
+
+
+### Delete User Data [DELETE]
+
+Delete the selected user data.
+
++ Request
+
+    + Headers
+    
+                Authentication: Bearer JWT
+ 
++ Response 204
+
+## Group Exam Questions and Answers
+
+Resources related to exam questions and answers in the API.
+
+## Exam Question Create Operation [/v1/questions]
+
+### Create Exam Question [POST]
+
+This is for creating new exam question. You may create your own exam question using this action. It takes a JSON object containing a question and answers in the form of choices.
+
++ soal (string) - The exam question.
++ pilihan_a (string) - First answer choice.
++ pilihan_b (string) - Second answer choice.
++ pilihan_c (string) - Third answer choice.
++ pilihan_d (string) - Fourth answer choice.
++ jawaban (enum[string]) - The right answer.
+
++ Request (application/json)
+
+    + Headers
+    
+                Authentication: Bearer JWT
+ 
+    + Body
+
+            {
+                "soal": "Apakah arti dari kata 'table' dalam bahasa Indonesia?",
+                "pilihan_a": "Kursi",
+                "pilihan_b": "Pintu",
+                "pilihan_c": "Jendela",
+                "pilihan_d": "Meja",
+                "jawaban": "d"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /v1/questions/1
+
+    + Body
+
+            {
+                "soal": "Apakah arti dari kata 'table' dalam bahasa Indonesia?",
+                "pilihan_a":
+                            {
+                                "name": "Kursi",
+                                "url": "/v1/questions/1/choices/1"
+                            },
+                "pilihan_b": 
+                            {
+                                "name": "Pintu",
+                                "url": "/v1/questions/1/choices/2"
+                            },
+                "pilihan_c": 
+                            {
+                                "name": "Jendela",
+                                "url": "/v1/questions/1/choices/3"
+                            },
+                "pilihan_d": 
+                            {
+                                "name": "Meja",
+                                "url": "/v1/questions/1/choices/4"
+                            },
+                "jawaban": "d"
+            }
+
+## Exam Question Read, Update, and Delete Operation [/v1/questions/{question_id}]
+
++ Parameters
+    + question_id: 1 (required, number) - ID of the exam question in form of an integer
+
+### Read an Exam Question Detail [GET]
+
+This is for reading certain exam question detail.
+
++ Request
+
+    + Headers
+    
+                Authentication: Bearer JWT
+
++ Response 200 (application/json)
+
+        {
+            "soal": "Apakah arti dari kata 'table' dalam bahasa Indonesia?",
+            "pilihan_a":
+                        {
+                            "name": "Kursi",
+                            "url": "/v1/questions/1/choices/1"
+                        },
+            "pilihan_b": 
+                        {
+                            "name": "Pintu",
+                            "url": "/v1/questions/1/choices/2"
+                        },
+            "pilihan_c": 
+                        {
+                            "name": "Jendela",
+                            "url": "/v1/questions/1/choices/3"
+                        },
+            "pilihan_d": 
+                        {
+                            "name": "Meja",
+                            "url": "/v1/questions/1/choices/4"
+                        },
+            "jawaban": "d"
+        }
+
+### Update an Exam Question [PUT]
+
+This is for updating certain exam question detail.
+
++ Request (application/json)
+
+    + Headers
+    
+                Authentication: Bearer JWT
+
+    + Body
+ 
+            {
+                "soal": "Apakah istilah bahasa Inggris dari kata 'mobil'?",
+                "pilihan_a": "Cycle",
+                "pilihan_b": "Plane",
+                "pilihan_c": "Car",
+                "pilihan_d": "Ship",
+                "jawaban": "d"
+            }
+
++ Response 201 (application/json)
+
+    + Headers
+
+            Location: /v1/questions/1
+
+    + Body
+
+            {
+                "soal": "Apakah istilah bahasa Inggris dari kata 'mobil'?",
+                "pilihan_a":
+                            {
+                                "name": "Cycle",
+                                "url": "/v1/questions/1/choices/1"
+                            },
+                "pilihan_b": 
+                            {
+                                "name": "Plane",
+                                "url": "/v1/questions/1/choices/2"
+                            },
+                "pilihan_c": 
+                            {
+                                "name": "Car",
+                                "url": "/v1/questions/1/choices/3"
+                            },
+                "pilihan_d": 
+                            {
+                                "name": "Ship",
+                                "url": "/v1/questions/1/choices/4"
+                            },
+                "jawaban": "d"
+            }
+
+
+### Delete an Exam Question [DELETE]
+
+Delete the selected exam question.
+
++ Request
+
+    + Headers
+    
+                Authentication: Bearer JWT
+
++ Response 204
+
+## Exam Questions Collection [/v1/questions{?page}]
+
++ Parameters
+    + page: 1 (optional, number) - The page of questions to return
+
+### Read All Exam Questions [GET]
+
++ Response 200 (application/json)
+
+    + Headers
+
+            Link: </v1/questions?page=2>; rel="next"
+
+            Authentication: Bearer JWT
+
+    + Body
+
+            [
+                {
+                    "soal": "Apakah arti dari kata 'table' dalam bahasa Indonesia?",
+                    "pilihan_a":
+                                {
+                                    "name": "Kursi",
+                                    "url": "/v1/questions/1/choices/1"
+                                },
+                    "pilihan_b": 
+                                {
+                                    "name": "Pintu",
+                                    "url": "/v1/questions/1/choices/2"
+                                },
+                    "pilihan_c": 
+                                {
+                                    "name": "Jendela",
+                                    "url": "/v1/questions/1/choices/3"
+                                },
+                    "pilihan_d": 
+                                {
+                                    "name": "Meja",
+                                    "url": "/v1/questions/1/choices/4"
+                                },
+                    "jawaban": "d"
+                },
+                {
+                    "soal": "Apakah istilah bahasa Inggris dari kata 'kaki'?",
+                    "pilihan_a":
+                                {
+                                    "name": "Hand",
+                                    "url": "/v1/questions/2/choices/1"
+                                },
+                    "pilihan_b": 
+                                {
+                                    "name": "Feet",
+                                    "url": "/v1/questions/2/choices/2"
+                                },
+                    "pilihan_c": 
+                                {
+                                    "name": "Head",
+                                    "url": "/v1/questions/2/choices/3"
+                                },
+                    "pilihan_d": 
+                                {
+                                    "name": "Face",
+                                    "url": "/v1/questions/2/choices/4"
+                                },
+                    "jawaban": "d"
+                }
+            ]
+
+## Answer the Exam Question [/v1/questions/{question_id}/choices/{choice_id}]
+
++ Parameters
+    + question_id: 1 (required, number) - ID of the exam question in form of an integer
+    + choice_id: 1 (required, number) - ID of the user choice to answer the exam in form of an integer
+
+### Choose an Exam Answer [POST]
+
+This action allows you to choose an answer for given exam question.
+
++ Request
+
+    + Headers
+    
+                Authentication: Bearer JWT
+ 
++ Response 201
+
+    + Headers
+
+            Location: /v1/questions/1
+            
+# Data Structures
+
+## OAuth grant request (object)
++ `grant_type`: `client_credentials` (string, required)
+
+## `OAuth jwt-bearer grant request` (object)
++ `grant_type`: `urn:ietf:params:oauth:grant-type:jwt-bearer` (string, required)
++ assertion: `eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ` (string, required)
+
+## OAuth valid response (object)
++ `access_token`: `eyJhbGciOiJIUzI1NiJ9.e30.XmNK3GpH3Ys_7wsYBfq4C3M6goz71I7dTgUkuIa5lyQ` (string, required) - valid JWT
++ scope: all (string, required) - scopes of current token
++ `expires_in`: 300 (number, required)
++ `token_type`: Bearer (string, required)
+
+## Server response (object)
++ status: ok (string, required)
